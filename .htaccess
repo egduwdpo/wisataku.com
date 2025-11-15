@@ -1,0 +1,16 @@
+# Aktifkan URL rewriting
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Izinkan akses folder uploads
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_URI} ^/uploads/
+    RewriteRule .* - [L]
+</IfModule>
+
+# Atau (lebih sederhana, direkomendasikan)
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|pdf|mp4)$">
+    Require all granted
+</FilesMatch>
