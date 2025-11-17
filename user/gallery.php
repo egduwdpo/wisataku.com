@@ -547,7 +547,7 @@ $galeri = $pdo->query("SELECT * FROM Galeri ORDER BY tanggal_upload DESC")->fetc
             </div>
         <?php endif; ?>
     </div>
-
+    <?php include '../includes/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>

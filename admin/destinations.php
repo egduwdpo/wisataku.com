@@ -19,34 +19,83 @@ if ($_POST) {
     $tutup = $_POST['jam_tutup'];
     $maps = $_POST['lokasi_maps'];
     $fotoLama = $_POST['foto_lama'] ?? null;
+    $galleryLama = $_POST['gallery_lama'] ?? '[]';
 
+    $folderTujuan = "../uploads/destinations/";
+    if (!is_dir($folderTujuan)) mkdir($folderTujuan, 0777, true);
+
+    // Upload foto utama
     $namaFile = $fotoLama;
-
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-        $namaFile = time() . "_" . basename($_FILES['foto']['name']);
-        $tmpFile = $_FILES['foto']['tmp_name'];
-        $folderTujuan = "../uploads/destinations/";
-        if (!is_dir($folderTujuan)) mkdir($folderTujuan, 0777, true);
-        move_uploaded_file($tmpFile, $folderTujuan . $namaFile);
+        $namaFile = time() . "_main_" . basename($_FILES['foto']['name']);
+        move_uploaded_file($_FILES['foto']['tmp_name'], $folderTujuan . $namaFile);
     }
+
+    // Upload gallery photos (multiple)
+    $galleryArray = json_decode($galleryLama, true) ?? [];
+    
+    if (isset($_FILES['foto_gallery']) && is_array($_FILES['foto_gallery']['tmp_name'])) {
+        foreach ($_FILES['foto_gallery']['tmp_name'] as $key => $tmp) {
+            if ($_FILES['foto_gallery']['error'][$key] === UPLOAD_ERR_OK) {
+                $filename = time() . "_gallery_" . $key . "_" . basename($_FILES['foto_gallery']['name'][$key]);
+                if (move_uploaded_file($tmp, $folderTujuan . $filename)) {
+                    $galleryArray[] = $filename;
+                }
+            }
+        }
+    }
+
+    // Convert gallery array to JSON
+    $foto_gallery_json = json_encode($galleryArray);
 
     if ($id) {
         $stmt = $pdo->prepare("UPDATE Destinations 
             SET nama_destinasi=?, kabupaten=?, kategori_id=?, deskripsi=?, fasilitas=?, harga_tiket=?, 
-                jam_buka=?, jam_tutup=?, foto=?, lokasi_maps=? 
+                jam_buka=?, jam_tutup=?, foto=?, lokasi_maps=?, foto_gallery=? 
             WHERE id=?");
-        $stmt->execute([$nama, $kab, $kat, $desk, $fas, $harga, $buka, $tutup, $namaFile, $maps, $id]);
+        $stmt->execute([$nama, $kab, $kat, $desk, $fas, $harga, $buka, $tutup, $namaFile, $maps, $foto_gallery_json, $id]);
         $message = "Destinasi berhasil diperbarui!";
         $messageType = "success";
     } else {
         $stmt = $pdo->prepare("INSERT INTO Destinations 
             (nama_destinasi, kabupaten, kategori_id, deskripsi, fasilitas, harga_tiket, 
-             jam_buka, jam_tutup, foto, lokasi_maps) 
-            VALUES (?,?,?,?,?,?,?,?,?,?)");
-        $stmt->execute([$nama, $kab, $kat, $desk, $fas, $harga, $buka, $tutup, $namaFile, $maps]);
+             jam_buka, jam_tutup, foto, lokasi_maps, foto_gallery) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        $stmt->execute([$nama, $kab, $kat, $desk, $fas, $harga, $buka, $tutup, $namaFile, $maps, $foto_gallery_json]);
         $message = "Destinasi berhasil ditambahkan!";
         $messageType = "success";
     }
+}
+
+// Delete Gallery Photo
+if (isset($_GET['delete_gallery']) && isset($_GET['dest_id'])) {
+    $dest_id = $_GET['dest_id'];
+    $photo_name = $_GET['delete_gallery'];
+    
+    // Get current gallery
+    $stmt = $pdo->prepare("SELECT foto_gallery FROM Destinations WHERE id = ?");
+    $stmt->execute([$dest_id]);
+    $dest = $stmt->fetch();
+    
+    $gallery = json_decode($dest['foto_gallery'], true) ?? [];
+    
+    // Remove photo from array
+    $gallery = array_values(array_filter($gallery, function($photo) use ($photo_name) {
+        return $photo !== $photo_name;
+    }));
+    
+    // Delete file
+    $file_path = "../uploads/destinations/" . $photo_name;
+    if (file_exists($file_path)) {
+        unlink($file_path);
+    }
+    
+    // Update database
+    $stmt = $pdo->prepare("UPDATE Destinations SET foto_gallery = ? WHERE id = ?");
+    $stmt->execute([json_encode($gallery), $dest_id]);
+    
+    header("Location: destinations.php?edit=" . $dest_id . "&gallery_deleted=1");
+    exit;
 }
 
 // Delete
@@ -453,6 +502,7 @@ if (isset($_GET['edit'])) {
             <form method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="<?= $edit['id'] ?? '' ?>">
                 <input type="hidden" name="foto_lama" value="<?= $edit['foto'] ?? '' ?>">
+                <input type="hidden" name="gallery_lama" value="<?= htmlspecialchars($edit['foto_gallery'] ?? '[]') ?>">
 
                 <div class="row g-4">
                     <!-- Nama Destinasi -->
@@ -521,12 +571,12 @@ if (isset($_GET['edit'])) {
                     <!-- Foto -->
                     <div class="col-12">
                         <label class="form-label">
-                            <i class="bi bi-image-fill"></i> Foto Destinasi
+                            <i class="bi bi-image-fill"></i> Foto Utama Destinasi
                         </label>
                         <div class="file-input-wrapper">
                             <label class="file-input-label">
                                 <i class="bi bi-cloud-upload-fill" style="font-size: 1.5rem;"></i>
-                                <span id="file-name"><?= $edit ? 'Ganti Foto (Opsional)' : 'Pilih Foto' ?></span>
+                                <span id="file-name"><?= $edit ? 'Ganti Foto (Opsional)' : 'Pilih Foto Utama' ?></span>
                                 <input type="file" name="foto" accept="image/*" 
                                        <?= $edit ? '' : 'required' ?> 
                                        onchange="document.getElementById('file-name').textContent = this.files[0]?.name || 'Pilih Foto'">
@@ -535,6 +585,47 @@ if (isset($_GET['edit'])) {
                         <?php if ($edit && $edit['foto']): ?>
                             <img src="../uploads/destinations/<?= $edit['foto'] ?>" 
                                  class="mt-3 destination-img" alt="Current">
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Foto Gallery (Multiple) -->
+                    <div class="col-12">
+                        <label class="form-label">
+                            <i class="bi bi-images"></i> Gallery Foto (Opsional - Max 5 foto)
+                        </label>
+                        <div class="file-input-wrapper">
+                            <label class="file-input-label">
+                                <i class="bi bi-cloud-upload-fill" style="font-size: 1.5rem;"></i>
+                                <span id="gallery-file-name">Pilih Multiple Foto</span>
+                                <input type="file" name="foto_gallery[]" accept="image/*" multiple 
+                                       onchange="updateGalleryFileName(this)">
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i> Anda bisa pilih hingga 5 foto sekaligus (Ctrl+Click atau Cmd+Click)
+                        </small>
+                        
+                        <?php if ($edit && !empty($edit['foto_gallery'])): ?>
+                            <?php 
+                            $gallery = json_decode($edit['foto_gallery'], true) ?? [];
+                            if (!empty($gallery)):
+                            ?>
+                                <div class="mt-3">
+                                    <strong>Foto Gallery Saat Ini:</strong>
+                                    <div class="gallery-preview mt-2">
+                                        <?php foreach ($gallery as $photo): ?>
+                                            <div class="gallery-item">
+                                                <img src="../uploads/destinations/<?= htmlspecialchars($photo) ?>" alt="Gallery">
+                                                <a href="?delete_gallery=<?= urlencode($photo) ?>&dest_id=<?= $edit['id'] ?>" 
+                                                   class="delete-gallery-btn"
+                                                   onclick="return confirm('Hapus foto ini dari gallery?')">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </a>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
 
@@ -689,6 +780,20 @@ if (isset($_GET['edit'])) {
                 setTimeout(() => alert.remove(), 500);
             }
         }, 5000);
+
+        // Update gallery file name display
+        function updateGalleryFileName(input) {
+            const fileNameDisplay = document.getElementById('gallery-file-name');
+            if (input.files.length > 0) {
+                if (input.files.length === 1) {
+                    fileNameDisplay.textContent = input.files[0].name;
+                } else {
+                    fileNameDisplay.textContent = `${input.files.length} foto dipilih`;
+                }
+            } else {
+                fileNameDisplay.textContent = 'Pilih Multiple Foto';
+            }
+        }
     </script>
 </body>
 </html>

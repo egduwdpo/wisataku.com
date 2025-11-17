@@ -95,6 +95,257 @@ $reviews = $reviews->fetchAll();
             transform: scale(1.05);
         }
 
+        .carousel-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .carousel-image.active {
+            opacity: 1;
+        }
+
+        /* Carousel Navigation Buttons */
+.carousel-prev,
+.carousel-next,
+.carousel-pause {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.3s;
+    user-select: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.carousel-prev:hover,
+.carousel-next:hover,
+.carousel-pause:hover {
+    background: white;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.carousel-prev {
+    left: 20px;
+}
+
+.carousel-next {
+    right: 20px;
+}
+
+.carousel-pause {
+    bottom: 20px;
+    right: 20px;
+    top: auto;
+    transform: none;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+}
+
+/* Indicators (Dots) */
+.carousel-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.carousel-dot:hover {
+    background: white;
+    transform: scale(1.2);
+}
+
+.carousel-dot.active {
+    background: #11998e;
+    width: 30px;
+    border-radius: 20px;
+}
+        /* Gallery Section */
+        .gallery-section {
+            margin-top: 30px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-thumbnail {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 120px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .gallery-thumbnail:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-thumbnail:hover::after {
+            opacity: 1;
+        }
+
+        /* Lightbox Modal */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .lightbox-modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.3s;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #333;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            z-index: 10001;
+        }
+
+        .lightbox-close:hover {
+            background: #f5576c;
+            color: white;
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.8rem;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .lightbox-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .lightbox-prev {
+            left: 30px;
+        }
+
+        .lightbox-next {
+            right: 30px;
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+        }
+
         .image-overlay {
             position: absolute;
             bottom: 0;
@@ -194,6 +445,43 @@ $reviews = $reviews->fetchAll();
             line-height: 1.8;
             color: #555;
             text-align: justify;
+        }
+
+        /* Facilities Grid */
+        .facilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .facility-item {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 18px 20px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .facility-item:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .facility-item i {
+            font-size: 1.8rem;
+            background: white;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
 
         /* Map Container */
@@ -392,6 +680,12 @@ $reviews = $reviews->fetchAll();
             .destination-location { font-size: 1rem; }
             .main-image-container { height: 300px; }
             .info-stats { grid-template-columns: 1fr; }
+            .carousel-nav { width: 40px; height: 40px; font-size: 1.2rem; }
+            .carousel-prev { left: 10px; }
+            .carousel-next { right: 10px; }
+            .carousel-pause { width: 35px; height: 35px; font-size: 1rem; }
+            .carousel-dot { width: 10px; height: 10px; }
+            .carousel-dot.active { width: 25px; }
         }
     </style>
 </head>
@@ -414,7 +708,7 @@ $reviews = $reviews->fetchAll();
                         <a class="nav-link" href="destinations.php"><i class="bi bi-compass-fill"></i> Destinasi</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./dashboard.php"><i class="bi bi-person-circle"></i> Profil</a>
+                        <a class="nav-link" href="#"><i class="bi bi-person-circle"></i> Profil</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../auth/logout.php"><i class="bi bi-box-arrow-right"></i> Logout</a>
@@ -430,10 +724,48 @@ $reviews = $reviews->fetchAll();
             <i class="bi bi-arrow-left-circle-fill"></i> Kembali ke Destinasi
         </a>
 
-        <!-- Hero Image -->
+        <!-- Hero Image with Carousel -->
         <div class="main-image-container" data-aos="zoom-in">
-            <img src="../uploads/destinations/<?= htmlspecialchars($dest['foto']) ?>" 
-                 alt="<?= htmlspecialchars($dest['nama_destinasi']) ?>">
+            <?php 
+            // Combine main photo and gallery
+            $allPhotos = [$dest['foto']];
+            $gallery = json_decode($dest['foto_gallery'] ?? '[]', true);
+            if (!empty($gallery)) {
+                $allPhotos = array_merge($allPhotos, $gallery);
+            }
+            ?>
+            
+            <?php foreach ($allPhotos as $index => $photo): ?>
+                <img src="../uploads/destinations/<?= htmlspecialchars($photo) ?>" 
+                     alt="<?= htmlspecialchars($dest['nama_destinasi']) ?>"
+                     class="carousel-image <?= $index === 0 ? 'active' : '' ?>"
+                     data-index="<?= $index ?>">
+            <?php endforeach; ?>
+
+            <!-- Navigation Buttons -->
+            <?php if (count($allPhotos) > 1): ?>
+                <div class="carousel-prev carousel-nav" onclick="navigateCarousel(-1)">
+                    <i class="bi bi-chevron-left"></i>
+                </div>
+                <div class="carousel-next carousel-nav" onclick="navigateCarousel(1)">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+
+                <!-- Indicators -->
+                <div class="carousel-indicators">
+                    <?php foreach ($allPhotos as $index => $photo): ?>
+                        <div class="carousel-dot <?= $index === 0 ? 'active' : '' ?>" 
+                             onclick="goToSlide(<?= $index ?>)"
+                             data-index="<?= $index ?>"></div>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- Pause/Play Button -->
+                <div class="carousel-pause" onclick="toggleAutoplay()" title="Pause/Play">
+                    <i class="bi bi-pause-fill" id="pauseIcon"></i>
+                </div>
+            <?php endif; ?>
+
             <div class="image-overlay">
                 <h1 class="destination-title"><?= htmlspecialchars($dest['nama_destinasi']) ?></h1>
                 <p class="destination-location">
@@ -476,6 +808,30 @@ $reviews = $reviews->fetchAll();
                     </h2>
                     <p class="description-text"><?= nl2br(htmlspecialchars($dest['deskripsi'])) ?></p>
                 </div>
+
+                <!-- Fasilitas Section -->
+                <?php if (!empty($dest['fasilitas'])): ?>
+                <div class="info-card">
+                    <h2 class="section-title">
+                        <i class="bi bi-list-check"></i>
+                        Fasilitas yang Tersedia
+                    </h2>
+                    <div class="facilities-grid">
+                        <?php 
+                        $facilities = explode(',', $dest['fasilitas']);
+                        foreach ($facilities as $facility): 
+                            $facility = trim($facility);
+                            if (empty($facility)) continue;
+                            $icon = getFacilityIcon($facility);
+                        ?>
+                            <div class="facility-item">
+                                <i class="bi bi-<?= $icon ?>"></i>
+                                <span><?= htmlspecialchars($facility) ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
 
                 <!-- Map Section -->
                 <div class="info-card">
@@ -560,6 +916,9 @@ $reviews = $reviews->fetchAll();
         </div>
     </div>
 
+    <?php include '../includes/buble_chat.php'; ?>
+    <?php include '../includes/footer.php'; ?>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
@@ -599,6 +958,190 @@ $reviews = $reviews->fetchAll();
                 }
             });
         }
+
+        // Carousel Auto-Slide System
+        console.log('Initializing carousel...');
+        
+        let currentSlideIndex = 0;
+        let autoplayInterval;
+        let isAutoplayPaused = false;
+        const carouselImages = document.querySelectorAll('.carousel-image');
+        const carouselDots = document.querySelectorAll('.carousel-dot');
+        const pauseIcon = document.getElementById('pauseIcon');
+
+        console.log('Total images:', carouselImages.length);
+        console.log('Total dots:', carouselDots.length);
+
+        // Start autoplay
+        function startAutoplay() {
+            if (carouselImages.length <= 1) {
+                console.log('Only one image, autoplay disabled');
+                return;
+            }
+            
+            console.log('Starting autoplay...');
+            autoplayInterval = setInterval(() => {
+                if (!isAutoplayPaused) {
+                    console.log('Auto-navigating to next slide');
+                    navigateCarousel(1);
+                }
+            }, 2000); // Auto-slide every 2 seconds
+        }
+
+        // Stop autoplay
+        function stopAutoplay() {
+            clearInterval(autoplayInterval);
+        }
+
+        // Toggle pause/play
+        function toggleAutoplay() {
+            isAutoplayPaused = !isAutoplayPaused;
+            
+            if (isAutoplayPaused) {
+                pauseIcon.className = 'bi bi-play-fill';
+                document.querySelector('.carousel-pause').classList.add('paused');
+            } else {
+                pauseIcon.className = 'bi bi-pause-fill';
+                document.querySelector('.carousel-pause').classList.remove('paused');
+            }
+        }
+
+        // Navigate carousel
+        function navigateCarousel(direction) {
+            console.log('Navigating:', direction, 'Current index:', currentSlideIndex);
+            
+            // Remove active class from current
+            carouselImages[currentSlideIndex].classList.remove('active');
+            if (carouselDots[currentSlideIndex]) {
+                carouselDots[currentSlideIndex].classList.remove('active');
+            }
+
+            // Calculate next index
+            currentSlideIndex += direction;
+
+            // Loop around
+            if (currentSlideIndex < 0) {
+                currentSlideIndex = carouselImages.length - 1;
+            } else if (currentSlideIndex >= carouselImages.length) {
+                currentSlideIndex = 0;
+            }
+
+            console.log('New index:', currentSlideIndex);
+
+            // Add active class to new
+            carouselImages[currentSlideIndex].classList.add('active');
+            if (carouselDots[currentSlideIndex]) {
+                carouselDots[currentSlideIndex].classList.add('active');
+            }
+        }
+
+        // Go to specific slide
+        function goToSlide(index) {
+            // Remove active from current
+            carouselImages[currentSlideIndex].classList.remove('active');
+            if (carouselDots[currentSlideIndex]) {
+                carouselDots[currentSlideIndex].classList.remove('active');
+            }
+
+            // Set new index
+            currentSlideIndex = index;
+
+            // Add active to new
+            carouselImages[currentSlideIndex].classList.add('active');
+            if (carouselDots[currentSlideIndex]) {
+                carouselDots[currentSlideIndex].classList.add('active');
+            }
+
+            // Reset autoplay
+            if (!isAutoplayPaused) {
+                stopAutoplay();
+                startAutoplay();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                navigateCarousel(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateCarousel(1);
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                toggleAutoplay();
+            }
+        });
+
+        // Pause on hover
+        const carouselContainer = document.querySelector('.main-image-container');
+        if (carouselContainer) {
+            carouselContainer.addEventListener('mouseenter', () => {
+                stopAutoplay();
+            });
+
+            carouselContainer.addEventListener('mouseleave', () => {
+                if (!isAutoplayPaused) {
+                    startAutoplay();
+                }
+            });
+        }
+
+        // Start autoplay on page load
+        if (carouselImages.length > 1) {
+            console.log('Starting carousel with', carouselImages.length, 'images');
+            startAutoplay();
+        } else {
+            console.log('Single image mode - no carousel needed');
+        }
     </script>
 </body>
 </html>
+
+<?php
+// Helper function untuk mendapatkan icon berdasarkan nama fasilitas
+function getFacilityIcon($facility) {
+    $facility = strtolower($facility);
+    $iconMap = [
+        'parkir' => 'car-front-fill',
+        'toilet' => 'gender-ambiguous',
+        'musholla' => 'bookmark-star-fill',
+        'mushola' => 'bookmark-star-fill',
+        'masjid' => 'bookmark-star-fill',
+        'warung' => 'shop',
+        'kantin' => 'cup-hot-fill',
+        'restoran' => 'shop-window',
+        'cafe' => 'cup-straw',
+        'wifi' => 'wifi',
+        'internet' => 'wifi',
+        'gazebo' => 'house-heart-fill',
+        'playground' => 'balloon-heart-fill',
+        'area bermain' => 'balloon-heart-fill',
+        'kolam renang' => 'water',
+        'pemandu' => 'people-fill',
+        'guide' => 'people-fill',
+        'souvenir' => 'bag-heart-fill',
+        'toko' => 'bag-fill',
+        'atm' => 'credit-card-2-front-fill',
+        'p3k' => 'hospital',
+        'klinik' => 'hospital',
+        'security' => 'shield-check',
+        'cctv' => 'camera-video-fill',
+        'camping' => 'tent-fill',
+        'loker' => 'lock-fill',
+        'charger' => 'lightning-charge-fill',
+        'spot foto' => 'camera-fill',
+        'foto' => 'camera-fill',
+        'viewing deck' => 'binoculars-fill',
+        'tempat sampah' => 'trash3-fill',
+        'air minum' => 'droplet-fill',
+        'kursi roda' => 'person-wheelchair'
+    ];
+    
+    foreach ($iconMap as $keyword => $icon) {
+        if (strpos($facility, $keyword) !== false) {
+            return $icon;
+        }
+    }
+    
+    return 'check-circle-fill'; // default icon
+}
+?>

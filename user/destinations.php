@@ -565,6 +565,7 @@ $destinations = $stmt->fetchAll();
     </section>
 
     <?php include '../includes/buble_chat.php'; ?>
+    <?php include '../includes/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
